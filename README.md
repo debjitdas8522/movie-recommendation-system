@@ -88,23 +88,19 @@ movie-recommendation-system
 
 ---
 
-📸 Screenshots
+## 📸 Screenshots
 
-Home Page
+### Home Page
+![Home](assets/home.png)
 
-"Home" (assets/home.png)
+### Movie Details
+![Movie Details](assets/movie_details.png)
 
-Movie Details
+### Recommendations
+![Recommendations](assets/recommendations.png)
 
-"Movie Details" (assets/movie_details.png)
-
-Recommendations
-
-"Recommendations" (assets/recommendations.png)
-
-Top Rated Movies
-
-"Top Rated" (assets/top_rated.png)
+### Top Rated Movies
+![Top Rated](assets/top_rated.png)
 
 ---
 
