@@ -1,17 +1,17 @@
-🎬 Movie Recommendation System
+# 🎬 Movie Recommendation System
 
-"Python" (https://img.shields.io/badge/Python-3.10-blue)
-"Streamlit" (https://img.shields.io/badge/Streamlit-App-red)
-"Machine Learning" (https://img.shields.io/badge/Machine%20Learning-Recommender%20System-green)
-"TMDB API" (https://img.shields.io/badge/API-TMDB-orange)
+![Python](https://img.shields.io/badge/Python-3.10-blue)
+![Streamlit](https://img.shields.io/badge/Streamlit-App-red)
+![Machine Learning](https://img.shields.io/badge/Machine%20Learning-Recommender%20System-green)
+![TMDB API](https://img.shields.io/badge/API-TMDB-orange)
 
 An AI-powered Movie Recommendation System built using Python, Streamlit, and Machine Learning that recommends movies using a Hybrid Recommendation Approach combining content-based and collaborative filtering techniques.
 
 ---
 
-🚀 Live Demo
+## 🚀 Live Demo
 
-""Live Demo" (https://img.shields.io/badge/Live-Demo-brightgreen)" (https://movie-recommendation-system-crskk3s8appkmoytnzsdmck.streamlit.app)
+[![Live Demo](https://img.shields.io/badge/Live-Demo-brightgreen)](https://movie-recommendation-system-crskk3s8appkmoytnzsdmck.streamlit.app)
 
 Try the deployed application here:
 https://movie-recommendation-system-crskk3s8appkmoytnzsdmck.streamlit.app
