@@ -271,8 +271,7 @@ selected_genre = st.selectbox(
     ["All"] + genres_list
 )
 
-if selected_genre != "All":
-    movies = movies[movies["genres"].str.contains(selected_genre)]
+
 
 movie = st.text_input("🔎 Search any Movie to explore details")
 
@@ -312,29 +311,105 @@ if movie:
                 st.video(trailer)
 
 
-if st.button("Recommend Movies") and movie:
+
+if not movie and selected_genre == "All":
+    st.info("💡 Tip: Search a movie OR select a genre to get recommendations")
+if st.button("Recommend Movies"):
 
     with st.spinner("🤖 AI is finding the best movies for you..."):
 
-        recommendations = hybrid_recommendation(movie)
+        # 🎯 CASE 1: Movie selected → Hybrid Recommendation
+        if movie:
 
-        st.divider()
-        st.subheader(f"🍿Movies similar to {movie}")
+            recommendations = hybrid_recommendation(movie)
+
+            st.divider()
+            st.subheader(f"🍿 Movies similar to {movie}")
+
+            rec_df = recommendations.copy()
+
+            rec_df = rec_df.merge(movies[["title", "year"]], on="title", how="left")
+
+            # Remove missing years
+            rec_df = rec_df.dropna(subset=["year"])
+
+           # 🎯 STEP 1: Take 6 from recommendations (relevant)
+            rec_sample = rec_df.sample(min(6, len(rec_df)))
+
+            # 🎯 STEP 2: Get 4 OLD movies from same genre (more relevant)
+            # 🔥 FIX TITLE MATCHING
+            movie_row = movies[movies["title"].str.contains(movie, case=False, na=False)]
+
+            if not movie_row.empty:
+                genre = movie_row.iloc[0]["genres"].split("|")[0]
+            else:
+                genre = None
+
+            if genre:
+                old_pool = movies[
+                    (movies["year"] >= 1990) &
+                    (movies["year"] < 2010) &
+                    (movies["genres"].str.contains(genre, case=False))
+                ]
+            else:
+                old_pool = movies[(movies["year"] >= 1990) & (movies["year"] < 2010)]
+
+                old_sample = old_pool.sample(min(4, len(old_pool)))
+
+            # 🎯 STEP 3: Combine
+            rec_df = pd.concat([rec_sample, old_sample])
+
+            # Shuffle
+            rec_df = rec_df.sample(frac=1)
+
+            titles = rec_df["title"].values[:10]
+
+
+        # 🎯 CASE 2: No movie → Genre-based Recommendation
+        else:
+
+            if selected_genre == "All":
+                st.warning("⚠️ Please select a genre or search a movie")
+                st.stop()
+
+            st.divider()
+            st.subheader(f"🎭 Top {selected_genre} Movies")
+
+            filtered_movies = movies[movies["genres"].str.contains(selected_genre, case=False)]
+
+            # 🎯 Split by year
+            recent = filtered_movies[filtered_movies["year"] >= 2010]
+            old = filtered_movies[filtered_movies["year"] < 2010]
+
+            # 🎯 Sample both
+            recent_sample = recent.sample(min(5, len(recent)))
+            old_sample = old.sample(min(5, len(old)))
+
+            # 🎯 Combine
+            filtered_movies = pd.concat([recent_sample, old_sample]).sample(frac=1)
+
+            titles = filtered_movies["title"].values[:10]
+
+
+        # 🎬 DISPLAY (COMMON FOR BOTH CASES)
+
+        st.caption(f"Showing {len(titles)} recommendations")
 
         cols = st.columns(5)
 
-        for i, title in enumerate(recommendations["title"]):
+        for i, title in enumerate(titles):
 
-            poster , overview, rating = fetch_movie_details(title)
-            trailer =  fetch_trailer(title)
+            poster, overview, rating = fetch_movie_details(title)
+            trailer = fetch_trailer(title)
 
             with cols[i % 5]:
 
-                st.markdown(f"""
-                <div class="movie-card">
-                    <img src="{poster}" width="100%">
-                </div>
-                """, unsafe_allow_html=True)
+                if poster:
+                    st.markdown(f"""
+                    <div class="movie-card">
+                        <img src="{poster}" width="100%">
+                    </div>
+                    """, unsafe_allow_html=True)
 
                 st.caption(f"🎬 {title} ⭐ {round(rating,1)}")
 
@@ -345,16 +420,12 @@ if st.button("Recommend Movies") and movie:
                     with st.expander("▶ Watch Trailer"):
                         st.video(trailer)
 
-        
+
         st.divider()
         st.markdown(
         """
         <center>
-
         Built with using **Python, Streamlit, Scikit-Learn and TMDB API**
-
-        Movie Recommendation System – Portfolio Project
-
         </center>
         """,
         unsafe_allow_html=True
